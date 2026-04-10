@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="./homepage.css">
+    <script type="module" src="./homepage.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            CCS Lab Equipment Inventory
+        </a>
+        <div class="nav-links">
+            <a href="#maclab" class="nav-link">Mac Lab</a>
+            <a href="#pclab" class="nav-link">PC Lab</a>
+        </div>
+        <div class="navbar-menu">
+            <div class="user-info">
+                Welcome, <span id="loggedUserFName"></span>
+                <span class="user-role" id="userRoleBadge"></span>
+            </div>
+        </div>
+    </nav>
+    <div class="content">
+        <section id="maclab" style="display:none; margin-top: 24px;">
+            <h2>Mac Lab</h2>
+            <div class="pc-status-section">
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Macs:</span>
+                        <span class="stat-value" id="macTotal">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Working:</span>
+                        <span class="stat-value" id="macWorking">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Broken:</span>
+                        <span class="stat-value" id="macBroken">0</span>
+                    </div>
+                </div>
+                <div id="macList" class="pc-list">
+                    <!-- Mac computers will be dynamically added here -->
+                </div>
+            </div>
+        </section>
+        <section id="pclab" style="display:none; margin-top: 24px;">
+            <h2>PC Lab</h2>
+            <div class="pc-status-section">
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total PCs:</span>
+                        <span class="stat-value" id="pcTotal">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Working:</span>
+                        <span class="stat-value" id="pcWorking">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Broken:</span>
+                        <span class="stat-value" id="pcBroken">0</span>
+                    </div>
+                </div>
+                <div id="pcList" class="pc-list">
+                    <!-- PC computers will be dynamically added here -->
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+    // Section switching logic for nav links
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function setActiveLink(sectionId) {
+            navLinks.forEach((link) => {
+                const isActive = link.getAttribute('href') === `#${sectionId}`;
+                link.classList.toggle('active', isActive);
+            });
+        }
+
+        function showSection(sectionId) {
+            const sections = ['maclab', 'pclab'];
+            sections.forEach((id) => {
+                const section = document.getElementById(id);
+                section.style.display = 'none';
+                section.classList.remove('section-enter');
+            });
+
+            const targetSection = document.getElementById(sectionId);
+            targetSection.style.display = '';
+            void targetSection.offsetWidth;
+            targetSection.classList.add('section-enter');
+            setActiveLink(sectionId);
+        }
+        // Default: show Mac Lab
+        showSection('maclab');
+        document.querySelector('a.nav-link[href="#maclab"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('maclab');
+        });
+        document.querySelector('a.nav-link[href="#pclab"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('pclab');
+        });
+    });
+
+    // Generate PC/Mac cards
+    function generateLabCards() {
+        const macList = document.getElementById('macList');
+        const pcList = document.getElementById('pcList');
+
+        // Generate Mac Lab cards (assuming 10 Macs)
+        for (let i = 1; i <= 10; i++) {
+            const macCard = createComputerCard(`MAC${i}`, 'mac');
+            macList.appendChild(macCard);
+        }
+
+        // Generate PC Lab cards (PC 1 to 10)
+        for (let i = 1; i <= 10; i++) {
+            const pcCard = createComputerCard(`PC${i}`, 'pc');
+            pcList.appendChild(pcCard);
+        }
+    }
+
+    function createComputerCard(computerName, labType) {
+        const card = document.createElement('div');
+        card.className = 'pc-card';
+
+        card.innerHTML = `
+            <div class="pc-info">
+                <h4>${computerName}</h4>
+                <select class="pc-status-dropdown" data-pc="${computerName}">
+                    <option value="working">Working</option>
+                    <option value="broken">Broken</option>
+                </select>
+                <div class="peripherals">
+                    <div class="peripheral-item">
+                        <span>Monitor:</span>
+                        <button class="peripheral-btn" data-pc="${computerName}" data-peripheral="monitor" data-status="working">Working</button>
+                    </div>
+                    <div class="peripheral-item">
+                        <span>Keyboard:</span>
+                        <button class="peripheral-btn" data-pc="${computerName}" data-peripheral="keyboard" data-status="working">Working</button>
+                    </div>
+                    <div class="peripheral-item">
+                        <span>Mouse:</span>
+                        <button class="peripheral-btn" data-pc="${computerName}" data-peripheral="mouse" data-status="working">Working</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return card;
+    }
+
+    // Initialize cards when DOM is loaded
+    generateLabCards();
+    </script>
+</body>
+</html>
